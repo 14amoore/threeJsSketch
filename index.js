@@ -1,0 +1,81 @@
+// Started with https://threejsfundamentals.org/threejs/lessons/threejs-fundamentals.html ended with https://threejsfundamentals.org/threejs/lessons/threejs-responsive.html
+
+//'use strict';
+
+// global THREE
+function main() {
+  const canvas = document.querySelector('#stretcher');
+  const renderer = new THREE.WebGLRenderer({ canvas });
+
+  const fov = 75; // fov stand for field of view
+  const aspect = 2; // canvas default setting
+  const near = 0.1;
+  const far = 5;
+  const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+  camera.position.z = 2;
+
+  const scene = new THREE.Scene();
+
+  const boxWidth = 1;
+  const boxHeight = 1;
+  const boxDepth = 1;
+  const geometry = new THREE.BoxBufferGeometry(boxWidth, boxHeight, boxDepth);
+
+  function resizeRendererToDisplaySize(renderer) {
+    const canvas = renderer.domElement;
+    const pixelRatio = window.devicePixelRatio;
+    const width = (canvas.clientWidth * pixelRatio) | 0;
+    const height = (canvas.clientHeight * pixelRatio) | 0;
+    const needResize = canvas.width !== width || canvas.height !== height;
+    if (needResize) {
+      renderer.setSize(width, height, false);
+    }
+    return needResize;
+  }
+
+  function makeMoreCubes(geometry, color, x) {
+    const material = new THREE.MeshPhongMaterial({ color });
+
+    const cube = new THREE.Mesh(geometry, material);
+    scene.add(cube);
+
+    cube.position.x = x;
+    return cube;
+  }
+
+  const cubes = [
+    makeMoreCubes(geometry, 0x44aa88, 0),
+    makeMoreCubes(geometry, 0x8844aa, -2),
+    makeMoreCubes(geometry, 0xaa8844, 2)
+  ];
+
+  {
+    const color = 0xffffff;
+    const intensity = 1;
+    const light = new THREE.DirectionalLight(color, intensity);
+    light.position.set(-1, 2, 4);
+    scene.add(light);
+  }
+
+  function render(time) {
+    time *= 0.001; // converting time to seconds
+
+    if (resizeRendererToDisplaySize(renderer)) {
+      const canvas = renderer.domElement;
+      camera.aspect = canvas.clientWidth / canvas.clientHeight;
+      camera.updateProjectionMatrix();
+    }
+    cubes.forEach((cube, ndx) => {
+      const speed = 1 + ndx * 0.1;
+      const rot = time * speed;
+      cube.rotation.x = rot;
+      cube.rotation.y = rot;
+    });
+    renderer.render(scene, camera);
+
+    requestAnimationFrame(render);
+  }
+  requestAnimationFrame(render);
+}
+
+main();
