@@ -17,6 +17,6 @@
     "prettier": "^1.18.2"
   },
   "dependencies": {
-    "three": "^0.106.2"
+    "three": "^0.137.0"
   }
 }
